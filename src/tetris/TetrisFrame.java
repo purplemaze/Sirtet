@@ -1,9 +1,6 @@
 package tetris;
 
 import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -11,28 +8,30 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JTextArea;
 
 
 public class TetrisFrame extends JFrame {
 	
-	private JTextArea textArea;
-	private static final long serialVersionUID = 1L; //
+	private static final long serialVersionUID = 1L; 
+	private TetrisComponent tComponent;
 	
-	public TetrisFrame(Board b, TextTetrisView tView) {
+	
+	public TetrisFrame(Board b, TetrisComponent tComponent) {
 		super("YAM Productions");
-		textArea = new JTextArea(b.getWidth(), b.getHeight()); // int rows, int cols
-		createGUI(b, tView);
+		this.tComponent = tComponent;
+		System.out.println(tComponent);
+		b.addBoardListener(tComponent);
+		createGUI(b);
+
 	}
 	
-	private void createGUI(Board b, TextTetrisView tView) {
-        Container contentPane = this.getContentPane();
-        contentPane.setLayout(new FlowLayout());
+	
+	private void createGUI(Board b) {
 		makeMenubar(this);
-		textArea.setFont(new Font("monospaced", Font.PLAIN, 14));
-		textArea.setText(tView.convertToText(b));
+		
 		this.setLayout(new BorderLayout());
-		this.add(textArea, BorderLayout.CENTER);
+		//this.add(textArea, BorderLayout.SOUTH);
+		this.add(tComponent, BorderLayout.CENTER);
 		this.pack();
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setFocusable(true);
@@ -41,9 +40,6 @@ public class TetrisFrame extends JFrame {
 		
 	}
 	
-	public void updateTextArea(Board b, TextTetrisView tView) {
-		textArea.setText(tView.convertToText(b));	
-	}
     
     /**
      *  Create the Swing menu and its content.
@@ -63,7 +59,6 @@ public class TetrisFrame extends JFrame {
         fileMenu.add(quitItem);
         
         JMenuItem saveItem = new JMenuItem("Save");
-        saveItem.addActionListener(new SaveActionListener());
         fileMenu.add(saveItem);
         
         //Help menu
@@ -71,36 +66,10 @@ public class TetrisFrame extends JFrame {
         menubar.add(helpMenu);
         
         JMenuItem aboutItem = new JMenuItem("About Sirtet");
-        aboutItem.addActionListener(new AboutActionListener());
         helpMenu.add(aboutItem);
 
     }
     
-   
-	class OpenActionListener implements ActionListener {
-		public void actionPerformed(ActionEvent event) {
-			System.out.println("Open");
-		}
-	}
-	
-	class QuitActionListener implements ActionListener {
-		public void actionPerformed(ActionEvent event) {
-			// perform quit action
-		}
-	}
-	
-	class SaveActionListener implements ActionListener {
-		public void actionPerformed(ActionEvent event) {
-			// perform quit action
-		}
-	}
-
-	class AboutActionListener implements ActionListener {
-		public void actionPerformed(ActionEvent event) {
-			// perform quit action
-		}
-	}
-	
     /**
      * Quit function: quit the application.
      */

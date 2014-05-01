@@ -1,5 +1,6 @@
 package tetris;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -16,9 +17,11 @@ public class Board {
 	private final int width;
 	private Random rand;
 	private Poly falling;
+	private boolean fallingTetro;
 	private SquareType[][] fallingPosition;
 	private int fallingPositionY;
 	private int fallingPositionX;
+	private ArrayList<BoardListener> boardListeners; 
 	
 	/**
 	 * Constructor 1
@@ -27,8 +30,11 @@ public class Board {
 	 * @param width
 	 */
 	public Board(int height, int width) {
+		this.rand = new Random();
 		this.height = height;
 		this.width = width;
+		fallingTetro = false;
+		boardListeners = new ArrayList<BoardListener>();
 		squares = new SquareType[height][width];
 		falling = null;
 		fallingPosition = new SquareType[height][width];
@@ -45,6 +51,7 @@ public class Board {
 		this.rand = new Random();
 		this.height = height;
 		this.width = width;
+		boardListeners = new ArrayList<BoardListener>();
 		squares = new SquareType[height][width];
 		falling = null;
 		fallingPosition = new SquareType[height][width];
@@ -68,6 +75,7 @@ public class Board {
 				}
 			}
 		}
+		notifyListeners();
 	}
 	
 	/**
@@ -123,6 +131,10 @@ public class Board {
 		return squares;
 	}
 	
+	public void setFalling(Poly p, int y, int x) {
+		falling = p;
+	}
+	
 	/**
 	 * 
 	 * @return
@@ -153,6 +165,46 @@ public class Board {
 	 */
 	public SquareType[][] getFallingPostiton() {
 		return fallingPosition;
+	}
+	
+	/**
+	 * 
+	 * @param bl
+	 */
+	public void addBoardListener(BoardListener bl) {
+		boardListeners.add(bl);
+	}
+	
+	/**
+	 * 
+	 */
+	private void notifyListeners() {
+		if(boardListeners.isEmpty()) {
+			return;
+		}else {
+			for(BoardListener element: boardListeners) {
+				element.boardChanged();
+			}
+		}
+	}
+	
+	public void tick() {
+		if(fallingTetro) {
+			SquareType type = getSquaretype(fallingPositionY, fallingPositionX);
+			squares[fallingPositionY][fallingPositionX] = SquareType.EMPTY; 
+			fallingPositionX ++;
+			squares[fallingPositionY][fallingPositionX] = type; 
+		}else {
+			int temp = 1 + rand.nextInt(SquareType.values().length -2);
+			int y = getHeight()/2; 
+			int x = 1;
+			fallingPositionY= y;
+			fallingPositionX= x;
+			squares[y][x] = SquareType.values()[temp]; 
+			fallingTetro = true;
+		}
+		
+		notifyListeners();
 	}
 	
 	public static void main(String[] args) {

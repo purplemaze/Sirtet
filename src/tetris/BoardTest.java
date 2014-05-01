@@ -1,7 +1,9 @@
 package tetris;
 
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
+import java.util.EnumMap;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -16,32 +18,36 @@ import javax.swing.Timer;
  */
 public class BoardTest{
 	
-
+	private static final Color PURPLE_COLOR = new Color(128,0,128);
+	private EnumMap<SquareType, java.awt.Color> mColorMap;
 
 	public BoardTest(int n) {
+		setUpColorMap();
 		for(int i = 0; i < n; i++) {
 			createBoard();
 		}
 	}
 	
 	public void createBoard() {
-		Board b = new Board(40, 32, true);
+		Board b = new Board(12, 20);
 		TextTetrisView view = new TextTetrisView();
+		TetrisComponent tComponent = new TetrisComponent(b, mColorMap);
 		
 		System.out.println(view.convertToText(b));
 		System.out.println("\n");
 		System.out.println(b.getHeight() + "x" + b.getWidth());
-		TetrisFrame frame = new TetrisFrame(b, view);
-		tick(b, frame, view);
+		TetrisFrame frame = new TetrisFrame(b, tComponent);
+		tick(b, frame);
 	}
 	
 	@SuppressWarnings("serial")
-	public void tick(final Board b, final TetrisFrame frame, final TextTetrisView view ) {
+	public void tick(final Board b, final TetrisFrame frame) {
 		
 		final Action doOneStep = new AbstractAction() {
 	        public void actionPerformed(ActionEvent e) {
-	            b.createRandomBoard(b.getHeight(), b.getWidth());
-	            frame.updateTextArea(b, view);
+	            //b.createRandomBoard(b.getHeight(), b.getWidth());
+	        	b.tick();
+	            //frame.updateComponent();
 	        }
 	    };
 	    final Timer clockTimer = new Timer(1000, doOneStep);
@@ -50,6 +56,22 @@ public class BoardTest{
 	    //clockTimer.stop();
 		
 	}
+	
+    /**
+     * Method setting up the Color Map
+     */
+    private void setUpColorMap(){
+        this.mColorMap = new EnumMap<SquareType, java.awt.Color>(SquareType.class);
+        this.mColorMap.put(SquareType.I, Color.CYAN);
+        this.mColorMap.put(SquareType.J, Color.BLUE);
+        this.mColorMap.put(SquareType.L, Color.ORANGE);
+        this.mColorMap.put(SquareType.O, Color.YELLOW);
+        this.mColorMap.put(SquareType.Z, Color.RED);
+        this.mColorMap.put(SquareType.S, Color.GREEN);
+        this.mColorMap.put(SquareType.T, PURPLE_COLOR);
+        this.mColorMap.put(SquareType.EMPTY, Color.WHITE);
+        this.mColorMap.put(SquareType.OUTSIDE, Color.BLACK);
+    }
 		
 	public static void main(String[] args) {
 		new BoardTest(1);
