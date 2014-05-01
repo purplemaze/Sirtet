@@ -190,6 +190,9 @@ public class Board {
 	
 	public void tick() {
 		if(fallingTetro) {
+			if(fallingPositionY == getHeight() -3 || fallingPositionX == getWidth() -3) {
+				fallingTetro = false;
+			}
 			SquareType type = getSquaretype(fallingPositionY, fallingPositionX);
 			squares[fallingPositionY][fallingPositionX] = SquareType.EMPTY; 
 			fallingPositionX ++;

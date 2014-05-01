@@ -50,7 +50,7 @@ public class BoardTest{
 	            //frame.updateComponent();
 	        }
 	    };
-	    final Timer clockTimer = new Timer(1000, doOneStep);
+	    final Timer clockTimer = new Timer(300, doOneStep);
 	    clockTimer.setCoalesce(true);
 	    clockTimer.start();
 	    //clockTimer.stop();
