@@ -28,7 +28,7 @@ public class BoardTest{
 		}
 	}
 	
-	public void createBoard() {
+	private void createBoard() {
 		Board b = new Board(12, 20);
 		TextTetrisView view = new TextTetrisView();
 		TetrisComponent tComponent = new TetrisComponent(b, mColorMap);
@@ -41,7 +41,7 @@ public class BoardTest{
 	}
 	
 	@SuppressWarnings("serial")
-	public void tick(final Board b, final TetrisFrame frame) {
+	private void tick(final Board b, final TetrisFrame frame) {
 		
 		final Action doOneStep = new AbstractAction() {
 	        public void actionPerformed(ActionEvent e) {
