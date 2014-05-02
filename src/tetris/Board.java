@@ -1,7 +1,9 @@
 package tetris;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Random;
+
 
 /**
  * Game Board Class
@@ -17,10 +19,8 @@ public class Board {
 	private final int width;
 	private Random rand;
 	private Poly falling;
+	private Point fallingPosition;
 	private boolean fallingTetro;
-	private SquareType[][] fallingPosition;
-	private int fallingPositionY;
-	private int fallingPositionX;
 	private ArrayList<BoardListener> boardListeners; 
 	
 	/**
@@ -37,7 +37,7 @@ public class Board {
 		boardListeners = new ArrayList<BoardListener>();
 		squares = new SquareType[height][width];
 		falling = null;
-		fallingPosition = new SquareType[height][width];
+		fallingPosition = new Point(0,0);
 		createBoard(height, width);	
 	}
 	
@@ -54,7 +54,7 @@ public class Board {
 		boardListeners = new ArrayList<BoardListener>();
 		squares = new SquareType[height][width];
 		falling = null;
-		fallingPosition = new SquareType[height][width];
+		fallingPosition = null;
 		createRandomBoard(height, width);		
 	}
 	
@@ -136,34 +136,19 @@ public class Board {
 	}
 	
 	/**
-	 * 
+	 * Returns the falling Poly
 	 * @return
 	 */
 	public Poly getFalling() {
 		return falling;
 	}
 	
-	/**
-	 * 
-	 * @return
-	 */
-	public int getFallingPositionY() {
-		return fallingPositionY;	
-	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public int getFallingPositionX() {
-		return fallingPositionX;	
-	}
 			
 	/**
 	 * 
 	 * @return
 	 */
-	public SquareType[][] getFallingPostiton() {
+	public Point getFallingPostiton() {
 		return fallingPosition;
 	}
 	
@@ -188,6 +173,27 @@ public class Board {
 		}
 	}
 	
+	/**
+	 * Creates a new falling Poly
+	 * @return
+	 */
+	private Poly createNewFalling() {
+        TetrominoMaker tetroMaker = new TetrominoMaker();
+        Poly falling;
+        int temp = 1 + rand.nextInt(SquareType.values().length -2);
+        falling = tetroMaker.getPoly(temp);
+        //centers the polly
+        this.fallingPosition.setLocation(0, getHeight()/2 - 2);  //set x = y , y = x
+       // this.fallingPosition.setLocation(0, getHeight()/2);  //set x = y , y = x
+        return falling;
+    }
+		
+	public void tick() {	
+		this.falling = createNewFalling();	
+		notifyListeners();
+	}
+	
+	/*
 	public void tick() {
 		if(fallingTetro) {
 			if(fallingPositionY == getHeight() -3 || fallingPositionX == getWidth() -3) {
@@ -209,6 +215,7 @@ public class Board {
 		
 		notifyListeners();
 	}
+	*/
 	
 	public static void main(String[] args) {
 		int height = 22;

@@ -20,9 +20,8 @@ public class TextTetrisView {
 				
 				SquareType type = b.getSquaretype(y, x);
 				if(b.getFalling() != null) {
-					if(b.getFallingPositionY() == y && b.getFallingPositionX() == x) {
-						//TO DO
-					}			
+					
+						//TO DO		
 				}
 				switch (type) {
 					case EMPTY:

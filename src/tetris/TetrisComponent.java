@@ -39,18 +39,38 @@ public class TetrisComponent extends JComponent implements BoardListener {
 
         g2d.setColor(Color.BLACK);
         g2d.fillRect(0, 0, this.getWidth(), this.getHeight());
-
+        
+        //paint the board
         for (int y = 0; y < this.board.getHeight(); y++) {
             for (int x = 0; x < this.board.getWidth(); x++) {
-            	System.out.println(board.getSquaretype(y, x));
                 g2d.setColor(this.mColorMap.get(board.getSquaretype(y, x)));
                 g2d.fillRect((BLOCK_SIZE + BLOCK_SPACING) * y,
                         (BLOCK_SIZE + BLOCK_SPACING) * x,
                         BLOCK_SIZE, BLOCK_SIZE);
             }
         }
-   
+        if(board.getFalling() != null)
+        paintFalling(g2d);    
 	}
+    
+    /**
+     * Paints the falling tetromino
+     * @param g2d
+     */
+    private void paintFalling(Graphics2D g2d) {
+        Poly poly = board.getFalling();
+        for (int y = 0; y < poly.getPolyLength(); y++) {
+        	for(int x = 0; x < poly.getPolyLength(); x++ ) {
+        		if(poly.getPoly()[y][x] != SquareType.EMPTY) {
+        			System.out.println(poly.getPoly()[y][x]);
+        			g2d.setColor(this.mColorMap.get(poly.getPoly()[y][x]));
+                    g2d.fillRect((BLOCK_SIZE + BLOCK_SPACING) * (board.getFallingPostiton().y + y),
+                            (BLOCK_SIZE + BLOCK_SPACING) * (board.getFallingPostiton().x + x),
+                            BLOCK_SIZE, BLOCK_SIZE);
+        		}
+        	}
+        }  
+    }
     
 	@Override
 	public void boardChanged() {

@@ -19,5 +19,9 @@ public class Poly {
 	public SquareType[][] getPoly() {
 		return poly;
 	}
+	
+	public int getPolyLength() {
+		return poly.length;
+	}
 
 }
