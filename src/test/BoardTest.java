@@ -1,4 +1,4 @@
-package tetris;
+package test;
 
 
 import java.awt.Color;
@@ -29,13 +29,13 @@ public class BoardTest{
 	}
 	
 	private void createBoard() {
-		Board b = new Board(20, 12);
+		Board b = new Board(20, 26);
 		TextTetrisView view = new TextTetrisView();
 		TetrisComponent tComponent = new TetrisComponent(b, mColorMap);
 		
 		System.out.println(view.convertToText(b));
 		System.out.println("\n");
-		System.out.println(b.getHeight() + "x" + b.getWidth());
+		System.out.println(b.getWidth() + "x" + b.getHeight());
 		TetrisFrame frame = new TetrisFrame(b, tComponent);
 		tick(b, frame);
 	}
@@ -50,7 +50,7 @@ public class BoardTest{
 	            //frame.updateComponent();
 	        }
 	    };
-	    final Timer clockTimer = new Timer(300, doOneStep);
+	    final Timer clockTimer = new Timer(50, doOneStep);
 	    clockTimer.setCoalesce(true);
 	    clockTimer.start();
 	    //clockTimer.stop();

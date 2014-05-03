@@ -1,9 +1,8 @@
-package tetris;
+package test;
 
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Random;
-
 
 /**
  * Game Board Class
@@ -19,8 +18,8 @@ public class Board {
 	private final int width;
 	private Random rand;
 	private Poly falling;
-	private Point fallingPosition;
-	private boolean fallingTetro;
+	private Point fallingPosition; //top left corner of the Polyomino
+	private boolean gameOver;
 	private ArrayList<BoardListener> boardListeners; 
 	
 	/**
@@ -29,35 +28,18 @@ public class Board {
 	 * @param height
 	 * @param width
 	 */
-	public Board(int height, int width) {
+	public Board(int width, int height) {
 		this.rand = new Random();
 		this.height = height;
 		this.width = width;
-		fallingTetro = false;
 		boardListeners = new ArrayList<BoardListener>();
-		squares = new SquareType[height][width];
+		squares = new SquareType[width][height];
 		falling = null;
 		fallingPosition = new Point(0,0);
-		createBoard(height, width);	
+		gameOver = false;
+		createEmptyBoard(width, height);	
 	}
-	
-	/**
-	 * Constructor 2
-	 * Random Board
-	 * @param height
-	 * @param width
-	 */
-	public Board(int height, int width, boolean random) {
-		this.rand = new Random();
-		this.height = height;
-		this.width = width;
-		boardListeners = new ArrayList<BoardListener>();
-		squares = new SquareType[height][width];
-		falling = null;
-		fallingPosition = null;
-		createRandomBoard(height, width);		
-	}
-	
+		
 	/**
 	 * Creates a random game board
 	 * @param cols
@@ -83,7 +65,7 @@ public class Board {
 	 * @param cols
 	 * @param rows
 	 */
-	private void createBoard(int cols, int rows) {
+	private void createEmptyBoard(int cols, int rows) {
 		for(int y = 0; y < cols; y++) {
 			for(int x = 0; x < rows; x++) {
 				if(y == 0 || x == 0) {
@@ -115,12 +97,12 @@ public class Board {
 	
 	/**
 	 * Returns the SquareType at xy coordinate
-	 * @param y
 	 * @param x
+	 * @param y
 	 * @return
 	 */
-	public SquareType getSquaretype(int y, int x) {
-		return squares[y][x];
+	public SquareType getSquaretype(int x, int y) { 
+		return squares[x][y];
 	}
 	
 	/**
@@ -142,8 +124,7 @@ public class Board {
 	public Poly getFalling() {
 		return falling;
 	}
-	
-			
+				
 	/**
 	 * 
 	 * @return
@@ -184,24 +165,78 @@ public class Board {
         falling = tetroMaker.getPoly(temp);
         
         //centers the polly
-        this.fallingPosition.setLocation(0, getHeight()/2 - 2);  //set x = y , y = x
+        this.fallingPosition.setLocation(getWidth()/2 - 2, 0);  //set x = y , y = x
         return falling;
     }
 	
 	
 	/**
-	 * Try's to move a Poly
+	 * Try's to move the falling Poly
 	 * @param poly
 	 * @return
 	 */
-	public boolean tryMove(Poly poly) {
-		if(fallingPosition.getX() == getHeight() -2 ) {
-			System.out.println(fallingPosition.getX());
-			return false;
-		} 
-		this.fallingPosition.setLocation(this.fallingPosition.getX() +1, this.fallingPosition.getY());
-		return true;
+	private boolean tryMove(Poly poly) {		
+		if(movePoly(poly)){
+			this.fallingPosition.setLocation(this.fallingPosition.getX(), this.fallingPosition.getY() +1);
+			return true;
+		}
+		System.out.println(fallingPosition.getY());
+		addPolyToBoard(poly);
+		return false;
+	}
+	
+	/**
+	 * 
+	 * @param poly
+	 * @param point
+	 * @return
+	 */
+	private boolean movePoly(Poly poly) {
+		//använde PolyYlimit för att kolla alla koordinater i x led
+		boolean clearToMove = true;
+		//int yLimit = calcPolyYLimit(poly);
+		int yLimit = poly.getPolyYlimit();
+		for(int x = 0; x < poly.getPolyLength(); x++){
+			if(poly.getPoly()[x][yLimit] != SquareType.EMPTY) {
+				if(!(this.getSquaretype(this.fallingPosition.x + x, this.fallingPosition.y + yLimit +1) == SquareType.EMPTY)) //true if empty
+					return false;
+			}
+		}
+		/*
+		if(this.getSquaretype(this.fallingPosition.x, this.fallingPosition.y + yLimit +1) == SquareType.EMPTY)
+			return true;
+		*/
+		return clearToMove;
 		
+	}
+	
+	/**
+	 * Calculates the lowest part of the poly on the "y axis"
+	 * @param poly
+	 */
+	private int calcPolyYLimit(Poly poly) {
+		int yLimit = 0;
+		for(int y = 0; y < poly.getPolyLength(); y++) {
+			for(int x = 0; x < poly.getPolyLength(); x++) {
+				if(poly.getPoly()[x][y] != SquareType.EMPTY) {
+					yLimit = y;
+				}
+			}
+		}
+		return yLimit;
+	}
+	
+	/**
+	 * Adds a fallen Poly to the game board
+	 */
+	private void addPolyToBoard(Poly poly) {
+		for(int x = 0; x < poly.getPolyLength(); x++) {
+			for(int y = 0; y < poly.getPolyLength(); y++) {
+				if(poly.getPoly()[x][y] != SquareType.EMPTY) {
+					squares[this.getFallingPostiton().x + x][this.getFallingPostiton().y +y] = poly.getPoly()[x][y];
+				}
+			}
+		}
 	}
 	
 	/**
@@ -214,6 +249,7 @@ public class Board {
 				this.falling = tempFalling;	
 			}else {
 				System.out.println("Game over");
+				this.clearBoard();
 			}
 		}else {
 			if(tryMove(this.falling)) {
@@ -221,50 +257,31 @@ public class Board {
 			}else {
 				this.falling = null;
 			}
-			
 		}
 		notifyListeners();
 	}
 	
-	/*
-	public void tick() {
-		if(fallingTetro) {
-			if(fallingPositionY == getHeight() -3 || fallingPositionX == getWidth() -3) {
-				fallingTetro = false;
-			}
-			SquareType type = getSquaretype(fallingPositionY, fallingPositionX);
-			squares[fallingPositionY][fallingPositionX] = SquareType.EMPTY; 
-			fallingPositionX ++;
-			squares[fallingPositionY][fallingPositionX] = type; 
-		}else {
-			int temp = 1 + rand.nextInt(SquareType.values().length -2);
-			int y = getHeight()/2; 
-			int x = 1;
-			fallingPositionY= y;
-			fallingPositionX= x;
-			squares[y][x] = SquareType.values()[temp]; 
-			fallingTetro = true;
-		}
-		
-		notifyListeners();
+	/**
+	 * Clears the board
+	 */
+	public void clearBoard() {
+		createEmptyBoard(this.width, this.height);
 	}
-	*/
-	
+
 	public static void main(String[] args) {
 		int height = 22;
 		int width = 12;
 		int counter = 0;
-		Board b = new Board(height, width);
+		Board b = new Board(width, height);
 		System.out.println(b.squares.length);
 		
-		for(int y = 0; y < height; y++) {
-			for(int x = 0; x < width; x++) {
+		for(int x = 0; x < width; x++) {
+			for(int y = 0; y < height; y++) {
 				//System.out.println(y);
-				System.out.println(b.squares[y][x]);
+				System.out.println(b.squares[x][y]);
 				counter++;
 			}
 		}
 		System.out.println(counter);
 	}
-
 }
