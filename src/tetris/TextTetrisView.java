@@ -18,7 +18,7 @@ public class TextTetrisView {
 			sb.append("\n");
 			for (int x = 0; x < b.getWidth(); x++) {
 				
-				SquareType type = b.getSquaretype(y, x);
+				SquareType type = b.getSquaretype(x, y);
 				if(b.getFalling() != null) {
 					
 						//TO DO		

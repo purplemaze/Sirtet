@@ -1,9 +1,13 @@
 package tetris;
 
 import java.awt.Point;
+import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Random;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.Timer;
 
 /**
  * Game Board Class
@@ -14,14 +18,29 @@ import java.util.Random;
  */
 public class Board {
 	
+	private static final int TICK_COUNT = 200;
 	private SquareType[][] squares;
 	private final int height;
 	private final int width;
 	private Random rand;
 	private Poly falling;
-	private Point fallingPosition;
-	private boolean fallingTetro;
+	private Point fallingPosition; //top left corner of the Polyomino
+	private boolean gameOver;
 	private ArrayList<BoardListener> boardListeners; 
+    /**
+     * The tick Action, determines which function to call when the game updates.
+     */
+    @SuppressWarnings("serial")
+	private final Action tick = new AbstractAction() {
+		public void actionPerformed(ActionEvent e) {
+            tick();
+        }
+    };
+    
+    /**
+     * The timer that decides when to update the game.
+     */
+    private final Timer clockTimer = new Timer(TICK_COUNT, tick);
 	
 	/**
 	 * Constructor 1
@@ -29,35 +48,18 @@ public class Board {
 	 * @param height
 	 * @param width
 	 */
-	public Board(int height, int width) {
+	public Board(int width, int height) {
 		this.rand = new Random();
 		this.height = height;
 		this.width = width;
-		fallingTetro = false;
 		boardListeners = new ArrayList<BoardListener>();
-		squares = new SquareType[height][width];
+		squares = new SquareType[width][height];
 		falling = null;
 		fallingPosition = new Point(0,0);
-		createBoard(height, width);	
+		gameOver = false;
+		createEmptyBoard(width, height);	
 	}
-	
-	/**
-	 * Constructor 2
-	 * Random Board
-	 * @param height
-	 * @param width
-	 */
-	public Board(int height, int width, boolean random) {
-		this.rand = new Random();
-		this.height = height;
-		this.width = width;
-		boardListeners = new ArrayList<BoardListener>();
-		squares = new SquareType[height][width];
-		falling = null;
-		fallingPosition = null;
-		createRandomBoard(height, width);		
-	}
-	
+		
 	/**
 	 * Creates a random game board
 	 * @param cols
@@ -83,7 +85,7 @@ public class Board {
 	 * @param cols
 	 * @param rows
 	 */
-	private void createBoard(int cols, int rows) {
+	private void createEmptyBoard(int cols, int rows) {
 		for(int y = 0; y < cols; y++) {
 			for(int x = 0; x < rows; x++) {
 				if(y == 0 || x == 0) {
@@ -95,6 +97,7 @@ public class Board {
 				}
 			}
 		}
+		notifyListeners();
 	}
 	
 	/**
@@ -115,12 +118,12 @@ public class Board {
 	
 	/**
 	 * Returns the SquareType at xy coordinate
-	 * @param y
 	 * @param x
+	 * @param y
 	 * @return
 	 */
-	public SquareType getSquaretype(int y, int x) {
-		return squares[y][x];
+	public SquareType getSquaretype(int x, int y) { 
+		return squares[x][y];
 	}
 	
 	/**
@@ -142,8 +145,7 @@ public class Board {
 	public Poly getFalling() {
 		return falling;
 	}
-	
-			
+				
 	/**
 	 * 
 	 * @return
@@ -184,87 +186,167 @@ public class Board {
         falling = tetroMaker.getPoly(temp);
         
         //centers the polly
-        this.fallingPosition.setLocation(0, getHeight()/2 - 2);  //set x = y , y = x
+        this.fallingPosition.setLocation(getWidth()/2 - 2, 0);  //set x = y , y = x
         return falling;
     }
 	
-	
 	/**
-	 * Try's to move a Poly
+	 * Try's to move the falling Poly
 	 * @param poly
 	 * @return
 	 */
-	public boolean tryMove(Poly poly) {
-		if(fallingPosition.getX() == getHeight() -2 ) {
-			System.out.println(fallingPosition.getX());
-			return false;
-		} 
-		this.fallingPosition.setLocation(this.fallingPosition.getX() +1, this.fallingPosition.getY());
-		return true;
-		
+	private boolean tryMove(Poly poly) {		
+		if(movePolyY(poly)){
+			this.fallingPosition.setLocation(this.fallingPosition.getX(), this.fallingPosition.getY() +1);
+			return true;
+		}
+		System.out.println(fallingPosition.getY());
+		//addPolyToBoard(poly);
+		return false;
 	}
 	
 	/**
-	 * Updates the game
+	 * Try's to move the falling Poly
+	 * @param poly
+	 * @return
+	 */
+	private void tryMoveX(Poly poly) {		
+		if(movePolyX(poly)){
+			this.fallingPosition.setLocation(this.fallingPosition.getX() -1 , this.fallingPosition.getY());
+		}
+	}
+	
+	/**
+	 * Player movement of the Poly
+	 * @param i
+	 */
+	public void playerMovePoly(int i) {
+		//37 = left
+		if(i == 37)
+			tryMoveX(this.falling);
+		//39 = rigth
+		if(i == 39)
+		this.fallingPosition.setLocation(this.fallingPosition.getX() +1 , this.fallingPosition.getY());
+		//40 = down
+		//check movePoly() first
+		if(i == 40 && this.falling != null)
+		tryMove(this.falling);
+		
+		this.notifyListeners();
+	}
+	
+	/**
+	 * 
+	 * @param poly
+	 * @param point
+	 * @return
+	 */
+	private boolean movePolyX(Poly poly) {
+		boolean clearToMove = true;
+		int xLimit = poly.getPolyLefttXlimit();
+		for(int y = 0; y < poly.getPolyLength(); y++){
+			if(poly.getPoly()[xLimit][y] != SquareType.EMPTY) {
+				if(!(this.getSquaretype(this.fallingPosition.x + xLimit + 1, this.fallingPosition.y + y) == SquareType.EMPTY)) 
+					return false;		
+			}
+		}
+		return clearToMove;
+	}
+	
+	/**
+	 * 
+	 * @param poly
+	 * @param point
+	 * @return
+	 */
+	private boolean movePolyY(Poly poly) {
+		boolean clearToMove = true;
+		int yLimit = poly.getPolyYlimit();
+		for(int x = 0; x < poly.getPolyLength(); x++){
+			if(poly.getPoly()[x][yLimit] != SquareType.EMPTY) {
+				if(!(this.getSquaretype(this.fallingPosition.x + x, this.fallingPosition.y + yLimit +1) == SquareType.EMPTY)) //true if empty
+					return false;
+			}
+		}
+		return clearToMove;
+	}
+	
+	/**
+	 * Adds a fallen Poly to the game board
+	 */
+	private void addPolyToBoard(Poly poly) {
+		for(int x = 0; x < poly.getPolyLength(); x++) {
+			for(int y = 0; y < poly.getPolyLength(); y++) {
+				if(poly.getPoly()[x][y] != SquareType.EMPTY) {
+					squares[this.getFallingPostiton().x + x][this.getFallingPostiton().y +y] = poly.getPoly()[x][y];
+				}
+			}
+		}
+	}
+	
+	 
+	/**
+	 * Methods that gets called upon a game tick update.
+	 */
+    public void updateBoard(){
+        clockTimer.setCoalesce(true);
+        clockTimer.start();
+    }
+	
+	/**
+	 * Updates the game board
 	 */
 	public void tick() {
+		//Game over
+		if(this.gameOver == true)
+			return;
+		//Create a new falling Poly
 		if(falling == null){
 			Poly tempFalling = createNewFalling();
 			if(tryMove(tempFalling)) {
 				this.falling = tempFalling;	
 			}else {
 				System.out.println("Game over");
+				this.gameOver = true;
 			}
+		//Try to move the falling Poly	
 		}else {
 			if(tryMove(this.falling)) {
 				
 			}else {
+				addPolyToBoard(this.falling);
 				this.falling = null;
 			}
-			
 		}
 		notifyListeners();
 	}
-	
-	/*
-	public void tick() {
-		if(fallingTetro) {
-			if(fallingPositionY == getHeight() -3 || fallingPositionX == getWidth() -3) {
-				fallingTetro = false;
-			}
-			SquareType type = getSquaretype(fallingPositionY, fallingPositionX);
-			squares[fallingPositionY][fallingPositionX] = SquareType.EMPTY; 
-			fallingPositionX ++;
-			squares[fallingPositionY][fallingPositionX] = type; 
-		}else {
-			int temp = 1 + rand.nextInt(SquareType.values().length -2);
-			int y = getHeight()/2; 
-			int x = 1;
-			fallingPositionY= y;
-			fallingPositionX= x;
-			squares[y][x] = SquareType.values()[temp]; 
-			fallingTetro = true;
-		}
-		
-		notifyListeners();
+	public boolean gameOver() {
+		return this.gameOver;
 	}
-	*/
 	
+	/**
+	 * Clears the board
+	 */
+	public void clearBoard() {
+		this.gameOver = false;
+		this.falling = null;
+		createEmptyBoard(this.width, this.height);
+	}
+
 	public static void main(String[] args) {
 		int height = 22;
 		int width = 12;
 		int counter = 0;
-		Board b = new Board(height, width);
+		Board b = new Board(width, height);
 		System.out.println(b.squares.length);
 		
-		for(int y = 0; y < height; y++) {
-			for(int x = 0; x < width; x++) {
+		for(int x = 0; x < width; x++) {
+			for(int y = 0; y < height; y++) {
 				//System.out.println(y);
-				System.out.println(b.squares[y][x]);
+				System.out.println(b.squares[x][y]);
 				counter++;
 			}
 		}
 		System.out.println(counter);
 	}
-
 }

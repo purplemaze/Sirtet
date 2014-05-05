@@ -1,5 +1,7 @@
 package tetris;
 
+import input.Keyboard;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -12,13 +14,16 @@ public class TetrisComponent extends JComponent implements BoardListener {
 
 	private static final long serialVersionUID = 1L;
 	private Board board;
-    private static final int BLOCK_SIZE = 40;
+    private static final int BLOCK_SIZE = 12;
     private static final int BLOCK_SPACING = 1;
     private final EnumMap<SquareType, java.awt.Color> mColorMap;
+    private Keyboard keyboard;
 	
 	public TetrisComponent(Board board, EnumMap<SquareType, java.awt.Color> mColorMap) {
 		this.board = board;
 		this.mColorMap = mColorMap;
+		keyboard = new Keyboard(board);
+		this.addKeyListener(keyboard);
 	}
 	
 	
@@ -26,12 +31,10 @@ public class TetrisComponent extends JComponent implements BoardListener {
 	public Dimension getPreferredSize() {
 		super.getPreferredSize();
 
-        return new Dimension(this.board.getHeight() * (BLOCK_SIZE + BLOCK_SPACING), 
-        		this.board.getWidth() * (BLOCK_SIZE + BLOCK_SPACING));
+        return new Dimension(this.board.getWidth() * (BLOCK_SIZE + BLOCK_SPACING), 
+        		this.board.getHeight() * (BLOCK_SIZE + BLOCK_SPACING));
     }
 		
-	
-	
     @Override
     protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -43,7 +46,7 @@ public class TetrisComponent extends JComponent implements BoardListener {
         //paint the board
         for (int x = 0; x < this.board.getWidth(); x++) {
             for (int y = 0; y < this.board.getHeight(); y++) {
-                g2d.setColor(this.mColorMap.get(board.getSquaretype(y, x)));
+                g2d.setColor(this.mColorMap.get(board.getSquaretype(x, y)));
                 g2d.fillRect((BLOCK_SIZE + BLOCK_SPACING) * x,
                         (BLOCK_SIZE + BLOCK_SPACING) * y,
                         BLOCK_SIZE, BLOCK_SIZE);
@@ -59,21 +62,20 @@ public class TetrisComponent extends JComponent implements BoardListener {
      */
     private void paintFalling(Graphics2D g2d) {
         Poly poly = board.getFalling();
-        for (int y = 0; y < poly.getPolyLength(); y++) {
-        	for(int x = 0; x < poly.getPolyLength(); x++ ) {
-        		if(poly.getPoly()[y][x] != SquareType.EMPTY) {
-        			System.out.println(poly.getPoly()[y][x]);
-        			g2d.setColor(this.mColorMap.get(poly.getPoly()[y][x]));
-                    g2d.fillRect((BLOCK_SIZE + BLOCK_SPACING) * (board.getFallingPostiton().y + y),
-                            (BLOCK_SIZE + BLOCK_SPACING) * (board.getFallingPostiton().x + x),
+        for (int x = 0; x < poly.getPolyLength(); x++) {
+        	for(int y = 0; y < poly.getPolyLength(); y++ ) {
+        		if(poly.getPoly()[x][y] != SquareType.EMPTY) {
+        			g2d.setColor(this.mColorMap.get(poly.getPoly()[x][y]));
+                    g2d.fillRect((BLOCK_SIZE + BLOCK_SPACING) * (board.getFallingPostiton().x + x),
+                            (BLOCK_SIZE + BLOCK_SPACING) * (board.getFallingPostiton().y + y),
                             BLOCK_SIZE, BLOCK_SIZE);
         		}
         	}
         }  
     }
-    
+     
 	@Override
 	public void boardChanged() {
-		this.repaint();		
+		this.repaint();	
 	}
 }

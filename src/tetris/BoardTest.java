@@ -1,59 +1,49 @@
 package tetris;
 
-
 import java.awt.Color;
-import java.awt.event.ActionEvent;
 import java.util.EnumMap;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.Timer;
 
 
 /**
- * Skriv en testklass, BoardTest, som skapar en tom spelplan, 
- * konverterar den till en sträng med hjälp av TetrisTextView-klassen, och skriver ut
+ * 
  * @author Daniel
  *
  */
-public class BoardTest{
+public class BoardTest implements Runnable {
 	
 	private static final Color PURPLE_COLOR = new Color(128,0,128);
 	private EnumMap<SquareType, java.awt.Color> mColorMap;
+	private Board board;
+	private TetrisComponent tComponent;
+	private boolean gameOver;
+	private Thread thread;
 
-	public BoardTest(int n) {
+
+	public BoardTest() {
+		gameOver = false;
 		setUpColorMap();
-		for(int i = 0; i < n; i++) {
-			createBoard();
-		}
+		createBoard();
+		run();
 	}
 	
 	private void createBoard() {
-		Board b = new Board(20, 12);
+		board = new Board(20, 26);
+		thread = new Thread(this);
 		TextTetrisView view = new TextTetrisView();
-		TetrisComponent tComponent = new TetrisComponent(b, mColorMap);
-		
-		System.out.println(view.convertToText(b));
+		tComponent = new TetrisComponent(board, mColorMap);
+		System.out.println(view.convertToText(board));
 		System.out.println("\n");
-		System.out.println(b.getHeight() + "x" + b.getWidth());
-		TetrisFrame frame = new TetrisFrame(b, tComponent);
-		tick(b, frame);
+		System.out.println(board.getWidth() + "x" + board.getHeight());
+		new TetrisFrame(board, tComponent);
 	}
 	
-	@SuppressWarnings("serial")
-	private void tick(final Board b, final TetrisFrame frame) {
-		
-		final Action doOneStep = new AbstractAction() {
-	        public void actionPerformed(ActionEvent e) {
-	            //b.createRandomBoard(b.getHeight(), b.getWidth());
-	        	b.tick();
-	            //frame.updateComponent();
-	        }
-	    };
-	    final Timer clockTimer = new Timer(300, doOneStep);
-	    clockTimer.setCoalesce(true);
-	    clockTimer.start();
-	    //clockTimer.stop();
+	/**
+	 * The game loop
+	 */
+	public void run() {
+		while(!this.gameOver) {
+			board.updateBoard();
+		}
 		
 	}
 	
@@ -74,7 +64,7 @@ public class BoardTest{
     }
 		
 	public static void main(String[] args) {
-		new BoardTest(1);
+		new BoardTest();
 	}
 
 }

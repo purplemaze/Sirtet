@@ -1,0 +1,5 @@
+Gå igenom rörelselogiken för tetrominos
+
+försöka skriva om/ ändra i de olika metoderna tryMove() osv..
+
+Se till så att förflyttning i x-led fungerar, metode i Poly med villkor eller 2 olika för vilken del.
