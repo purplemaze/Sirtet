@@ -12,6 +12,7 @@ import java.util.EnumMap;
 public class BoardTest implements Runnable {
 	
 	private static final Color PURPLE_COLOR = new Color(128,0,128);
+	private static final Color OLIVE_COLOR = new Color(128,128,0);
 	private EnumMap<SquareType, java.awt.Color> mColorMap;
 	private Board board;
 	private TetrisComponent tComponent;
@@ -23,11 +24,13 @@ public class BoardTest implements Runnable {
 		gameOver = false;
 		setUpColorMap();
 		createBoard();
+		thread = new Thread(this);
+		thread.start();
 		run();
 	}
 	
 	private void createBoard() {
-		board = new Board(20, 26);
+		board = new Board(12, 20);
 		thread = new Thread(this);
 		TextTetrisView view = new TextTetrisView();
 		tComponent = new TetrisComponent(board, mColorMap);
@@ -43,8 +46,7 @@ public class BoardTest implements Runnable {
 	public void run() {
 		while(!this.gameOver) {
 			board.updateBoard();
-		}
-		
+		}	
 	}
 	
     /**
@@ -55,7 +57,7 @@ public class BoardTest implements Runnable {
         this.mColorMap.put(SquareType.I, Color.CYAN);
         this.mColorMap.put(SquareType.J, Color.BLUE);
         this.mColorMap.put(SquareType.L, Color.ORANGE);
-        this.mColorMap.put(SquareType.O, Color.YELLOW);
+        this.mColorMap.put(SquareType.O, OLIVE_COLOR);
         this.mColorMap.put(SquareType.Z, Color.RED);
         this.mColorMap.put(SquareType.S, Color.GREEN);
         this.mColorMap.put(SquareType.T, PURPLE_COLOR);

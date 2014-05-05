@@ -127,6 +127,16 @@ public class Board {
 	}
 	
 	/**
+	 * Sets a SquareType at given x and y
+	 * @param x
+	 * @param y
+	 * @param type
+	 */
+	private void setSquareTypeAt(int x, int y, SquareType type) {
+		this.squares[x][y] = type;
+	}
+	
+	/**
 	 * Returns the squares
 	 * @return
 	 */
@@ -201,19 +211,23 @@ public class Board {
 			return true;
 		}
 		System.out.println(fallingPosition.getY());
-		//addPolyToBoard(poly);
 		return false;
 	}
 	
 	/**
 	 * Try's to move the falling Poly
 	 * @param poly
-	 * @return
+	 * @param i: if i == 0 --> move left, if i == 1 --> move right
 	 */
-	private void tryMoveX(Poly poly) {		
-		if(movePolyX(poly)){
+	private void tryMoveX(Poly poly, int i) {
+		if(poly == null)
+			return;
+		//Move left
+		if(i == 0 && movePolyLeft(poly))
 			this.fallingPosition.setLocation(this.fallingPosition.getX() -1 , this.fallingPosition.getY());
-		}
+		//Move right
+		if(i == 1 && movePolyRight(poly))
+			this.fallingPosition.setLocation(this.fallingPosition.getX() +1 , this.fallingPosition.getY());
 	}
 	
 	/**
@@ -223,31 +237,54 @@ public class Board {
 	public void playerMovePoly(int i) {
 		//37 = left
 		if(i == 37)
-			tryMoveX(this.falling);
+			tryMoveX(this.falling, 0);
 		//39 = rigth
 		if(i == 39)
-		this.fallingPosition.setLocation(this.fallingPosition.getX() +1 , this.fallingPosition.getY());
+			tryMoveX(this.falling, 1);
 		//40 = down
 		//check movePoly() first
 		if(i == 40 && this.falling != null)
-		tryMove(this.falling);
+			tryMove(this.falling);
+		
+		if(i == 38 && this.falling != null)
+			this.falling = this.falling.rotateRight();
 		
 		this.notifyListeners();
 	}
 	
 	/**
-	 * 
+	 * Checks if it is possible to move the Poly to the left
 	 * @param poly
 	 * @param point
 	 * @return
 	 */
-	private boolean movePolyX(Poly poly) {
+	private boolean movePolyRight(Poly poly) {
 		boolean clearToMove = true;
-		int xLimit = poly.getPolyLefttXlimit();
-		for(int y = 0; y < poly.getPolyLength(); y++){
-			if(poly.getPoly()[xLimit][y] != SquareType.EMPTY) {
-				if(!(this.getSquaretype(this.fallingPosition.x + xLimit + 1, this.fallingPosition.y + y) == SquareType.EMPTY)) 
-					return false;		
+		for(int x = 0; x < poly.getPolyLength(); x++){
+			for(int y = 0; y < poly.getPolyLength(); y++){
+				if(poly.getPoly()[x][y] != SquareType.EMPTY) {
+					if(!(this.getSquaretype(this.fallingPosition.x + x + 1, this.fallingPosition.y + y) == SquareType.EMPTY)) 
+						return false;		
+				}
+			}
+		}
+		return clearToMove;
+	}
+	
+	/**
+	 * Checks if it is possible to move the Poly to the left
+	 * @param poly
+	 * @param point
+	 * @return
+	 */
+	private boolean movePolyLeft(Poly poly) {
+		boolean clearToMove = true;
+		for(int x = 0; x < poly.getPolyLength(); x++){
+			for(int y = 0; y < poly.getPolyLength(); y++){
+				if(poly.getPoly()[x][y] != SquareType.EMPTY) {
+					if(!(this.getSquaretype(this.fallingPosition.x + x - 1, this.fallingPosition.y + y) == SquareType.EMPTY)) 
+						return false;		
+				}
 			}
 		}
 		return clearToMove;
@@ -261,11 +298,12 @@ public class Board {
 	 */
 	private boolean movePolyY(Poly poly) {
 		boolean clearToMove = true;
-		int yLimit = poly.getPolyYlimit();
 		for(int x = 0; x < poly.getPolyLength(); x++){
-			if(poly.getPoly()[x][yLimit] != SquareType.EMPTY) {
-				if(!(this.getSquaretype(this.fallingPosition.x + x, this.fallingPosition.y + yLimit +1) == SquareType.EMPTY)) //true if empty
-					return false;
+			for(int y = 0; y < poly.getPolyLength(); y++){
+				if(poly.getPoly()[x][y] != SquareType.EMPTY) {
+					if(!(this.getSquaretype(this.fallingPosition.x + x, this.fallingPosition.y + y +1) == SquareType.EMPTY)) //true if empty
+						return false;
+				}
 			}
 		}
 		return clearToMove;
@@ -284,6 +322,44 @@ public class Board {
 		}
 	}
 	
+	private void checkRows(Poly poly) {;
+		for(int y = 1; y < this.height -1 ; y++) {
+			boolean fullRow = true;
+			for(int x = 1; x < this.width -1; x++) {
+				if(this.squares[x][y] == SquareType.EMPTY)
+					fullRow = false;
+			}
+			if(fullRow) { 
+				removeRow(y);
+			}
+		}
+		this.notifyListeners();
+	}
+	
+	/**
+	 * 
+	 * @param y
+	 */
+	private void removeRow(int y) {
+		for(int x = 1; x < this.width -1; x++) {
+			this.squares[x][y] = SquareType.EMPTY;
+		}
+		pushRows(y);
+	}
+	
+	/**
+	 * Pushes the rows over the deleted row down
+	 * @param maxY
+	 */
+	private void pushRows(int y) {
+		System.out.println(y);
+        for (int i = y; i > 0 ; i--) {
+            for (int x = 1; x < this.width - 1; x++) {
+            	if(this.getSquaretype(x, i - 1) == SquareType.OUTSIDE) return;
+                this.setSquareTypeAt(x, i, this.getSquaretype(x, i - 1));
+            }
+        }
+    }
 	 
 	/**
 	 * Methods that gets called upon a game tick update.
@@ -297,6 +373,8 @@ public class Board {
 	 * Updates the game board
 	 */
 	public void tick() {
+		//checks rows
+		checkRows(this.falling);
 		//Game over
 		if(this.gameOver == true)
 			return;
@@ -332,7 +410,7 @@ public class Board {
 		this.falling = null;
 		createEmptyBoard(this.width, this.height);
 	}
-
+	/*
 	public static void main(String[] args) {
 		int height = 22;
 		int width = 12;
@@ -349,4 +427,5 @@ public class Board {
 		}
 		System.out.println(counter);
 	}
+	*/
 }

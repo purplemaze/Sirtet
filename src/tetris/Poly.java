@@ -24,53 +24,17 @@ public class Poly {
 		return poly.length;
 	}
 	
-	/**
-	 * Returns the y axis limit of the Poly
-	 * @return
-	 */
-	public int getPolyYlimit() {
-		int yLimit = 0;
-		for(int y = 0; y < this.getPolyLength(); y++) {
-			for(int x = 0; x < this.getPolyLength(); x++) {
-				if(this.getPoly()[x][y] != SquareType.EMPTY) {
-					yLimit = y;
-				}
-			}
-		}
-		return yLimit;
-	}
 	
-	/**
-	 * Returns the right x axis limit of the Poly
-	 * @return
-	 */
-	public int getPolyRightXlimit() {
-		int xLimit = 0;
-		for(int y = 0; y < this.getPolyLength(); y++) {
-			for(int x = 0; x < this.getPolyLength(); x++) {
-				if(this.getPoly()[x][y] != SquareType.EMPTY) {
-					xLimit = x;
-				}
-			}
+	 public Poly rotateRight(){
+		    Poly newPoly = new Poly(new SquareType[this.getPolyLength()][this.getPolyLength()]);
+		    
+		    for (int r = 0; r < this.getPolyLength(); r++) {
+		        for (int c = 0; c < this.getPolyLength(); c++){
+		            newPoly.poly[c][this.getPolyLength()-1 -r] = this.poly[r][c];
+		        }
+		    }    
+		    return newPoly;
 		}
-		return xLimit;
-	}
-	
-	/**
-	 * Returns the left x axis limit of the Poly
-	 * @return
-	 */
-	public int getPolyLefttXlimit() {
-		int xLimit = 0;
-		for(int y = 0; y < this.getPolyLength(); y++) {
-			for(int x = 0; x < this.getPolyLength(); x++) {
-				if(this.getPoly()[x][y] != SquareType.EMPTY) {
-					xLimit = x;
-					break; // leaves the inner loop if we found a Squaretype
-				}
-			}
-		}
-		return xLimit;
-	}
+		
 
 }

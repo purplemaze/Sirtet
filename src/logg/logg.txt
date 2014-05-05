@@ -2,4 +2,28 @@ Gå igenom rörelselogiken för tetrominos
 
 försöka skriva om/ ändra i de olika metoderna tryMove() osv..
 
-Se till så att förflyttning i x-led fungerar, metode i Poly med villkor eller 2 olika för vilken del.
+
+Lägg till clear row //klart
+	Flytta övre delen av arrayen ett steg ner //klart
+
+
+
+lägg till rotate funktion
+	kolla så att poly kan rotera
+	fixa så att poly är centrerad efter rotationen.
+	
+Se över timern!
+	Man mpste kunna pausa osv..	
+
+
+Optimera koden!!
+
+Lägg till Next Tetromino(i den grafiska vyn)
+
+
+lägg till nivåförändring
+
+
+lägg till poäng
+
+ta bort de svarta kanterna, SquareType.OUTSIDE, från den grafiska komponenet. Alltså rita inte ut kanterna

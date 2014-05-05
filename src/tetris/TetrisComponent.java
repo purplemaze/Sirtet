@@ -1,6 +1,6 @@
 package tetris;
 
-import input.Keyboard;
+import tetris.input.Keyboard;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -14,7 +14,7 @@ public class TetrisComponent extends JComponent implements BoardListener {
 
 	private static final long serialVersionUID = 1L;
 	private Board board;
-    private static final int BLOCK_SIZE = 12;
+    private static final int BLOCK_SIZE = 15;
     private static final int BLOCK_SPACING = 1;
     private final EnumMap<SquareType, java.awt.Color> mColorMap;
     private Keyboard keyboard;

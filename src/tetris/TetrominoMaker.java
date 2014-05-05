@@ -17,7 +17,6 @@ public class TetrominoMaker {
 	public int getNumberOfTypes() {
 		return SquareType.values().length;
 	}
-
 	
 	/**
 	 * Returns a Polyomino based on a specified tetromino
@@ -65,12 +64,21 @@ public class TetrominoMaker {
 	 * @return
 	 */
 	private SquareType[][] createI() {
+		
 		SquareType[][] tetromino = new SquareType[][]{
-				{ SquareType.I,    	SquareType.EMPTY,     SquareType.EMPTY,     SquareType.EMPTY },
-				{ SquareType.I,     SquareType.EMPTY,	  SquareType.EMPTY,     SquareType.EMPTY },
-				{ SquareType.I,     SquareType.EMPTY,     SquareType.EMPTY,     SquareType.EMPTY },
-				{ SquareType.I,     SquareType.EMPTY,     SquareType.EMPTY,     SquareType.EMPTY },
+				{ SquareType.EMPTY,    	SquareType.I,     SquareType.EMPTY,     SquareType.EMPTY },
+				{ SquareType.EMPTY,     SquareType.I,	  SquareType.EMPTY,     SquareType.EMPTY },
+				{ SquareType.EMPTY,     SquareType.I,     SquareType.EMPTY,     SquareType.EMPTY },
+				{ SquareType.EMPTY,     SquareType.I,     SquareType.EMPTY,     SquareType.EMPTY },
 		};
+		/*
+		SquareType[][] tetromino = new SquareType[][]{
+				{ SquareType.EMPTY,    	SquareType.EMPTY,     SquareType.EMPTY,     SquareType.EMPTY },
+				{ SquareType.EMPTY,     SquareType.EMPTY,	  SquareType.EMPTY,     SquareType.EMPTY },
+				{ SquareType.I,     SquareType.I,     SquareType.I,     SquareType.I },
+				{ SquareType.EMPTY,     SquareType.EMPTY,     SquareType.EMPTY,     SquareType.EMPTY },
+		};
+		*/
 		return tetromino;
 	}
 	
@@ -80,10 +88,8 @@ public class TetrominoMaker {
 	 */
 	private SquareType[][] createO() {
 		SquareType[][] tetromino = new SquareType[][]{
-				{ SquareType.EMPTY,     SquareType.EMPTY,     	SquareType.EMPTY,     	SquareType.EMPTY },
-				{ SquareType.O,     	SquareType.O,     		SquareType.EMPTY,   SquareType.EMPTY },
-				{ SquareType.O,    		SquareType.O,    		SquareType.EMPTY,   SquareType.EMPTY },
-				{ SquareType.EMPTY,     SquareType.EMPTY,   	SquareType.EMPTY,   SquareType.EMPTY },
+				{ SquareType.O,     	SquareType.O },
+				{ SquareType.O,    		SquareType.O }
 		};
 		return tetromino;
 	}
