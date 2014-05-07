@@ -1,5 +1,6 @@
-Gå igenom rörelselogiken för tetrominos
 
+
+//LOGIK
 försöka skriva om/ ändra i de olika metoderna tryMove() osv..
 
 
@@ -9,8 +10,8 @@ Lägg till clear row //klart
 
 
 lägg till rotate funktion
-	kolla så att poly kan rotera
-	fixa så att poly är centrerad efter rotationen.
+	kolla så att poly kan rotera // typ klart
+	fixa så att poly är centrerad efter rotationen. //typ klart
 	
 Se över timern!
 	Man mpste kunna pausa osv..	
@@ -18,12 +19,15 @@ Se över timern!
 
 Optimera koden!!
 
-Lägg till Next Tetromino(i den grafiska vyn)
 
-
+//GRAFIK & LOGIK
 lägg till nivåförändring
 
+Lägg till Next Tetromino
 
 lägg till poäng
 
+
 ta bort de svarta kanterna, SquareType.OUTSIDE, från den grafiska komponenet. Alltså rita inte ut kanterna
+
+skapa snyggare rutor!

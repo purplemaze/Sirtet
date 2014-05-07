@@ -100,10 +100,9 @@ public class TetrominoMaker {
 	 */
 	private SquareType[][] createT() {
 		SquareType[][] tetromino = new SquareType[][]{
-				{ SquareType.EMPTY,     SquareType.T, 			SquareType.EMPTY,	SquareType.EMPTY },
-				{ SquareType.T,     	SquareType.T,     		SquareType.EMPTY, 	SquareType.EMPTY },
-				{ SquareType.EMPTY,     SquareType.T,  			SquareType.EMPTY, 	SquareType.EMPTY },	
-				{ SquareType.EMPTY,     SquareType.EMPTY,    	SquareType.EMPTY,   SquareType.EMPTY },
+				{ SquareType.EMPTY,     SquareType.T, 			SquareType.EMPTY },
+				{ SquareType.T,     	SquareType.T,     		SquareType.EMPTY },
+				{ SquareType.EMPTY,     SquareType.T,  			SquareType.EMPTY }
 		};	
 		return tetromino;
 	}
@@ -114,10 +113,9 @@ public class TetrominoMaker {
 	 */
 	private SquareType[][] createS() {
 		SquareType[][] tetromino = new SquareType[][]{
-				{ SquareType.EMPTY,     SquareType.S, 		SquareType.EMPTY, 	SquareType.EMPTY },
-				{ SquareType.S,     	SquareType.S,     	SquareType.EMPTY, 	SquareType.EMPTY },
-				{ SquareType.S,     	SquareType.EMPTY,   SquareType.EMPTY, 	SquareType.EMPTY },
-				{ SquareType.EMPTY,     SquareType.EMPTY,   SquareType.EMPTY,   SquareType.EMPTY },
+				{ SquareType.EMPTY,     SquareType.S, 		SquareType.EMPTY },
+				{ SquareType.S,     	SquareType.S,     	SquareType.EMPTY },
+				{ SquareType.S,     	SquareType.EMPTY,   SquareType.EMPTY }
 		};
 		return tetromino;
 	}
@@ -128,10 +126,9 @@ public class TetrominoMaker {
 	 */
 	private SquareType[][] createZ() {
 		SquareType[][] tetromino = new SquareType[][]{
-				{ SquareType.Z,     		SquareType.EMPTY, 	SquareType.EMPTY,	SquareType.EMPTY },
-				{ SquareType.Z,     		SquareType.Z,   	SquareType.EMPTY, 	SquareType.EMPTY },
-				{ SquareType.EMPTY,     	SquareType.Z,   	SquareType.EMPTY, 	SquareType.EMPTY },
-				{ SquareType.EMPTY,     	SquareType.EMPTY,   SquareType.EMPTY,   SquareType.EMPTY },			
+				{ SquareType.Z,     		SquareType.EMPTY, 	SquareType.EMPTY },
+				{ SquareType.Z,     		SquareType.Z,   	SquareType.EMPTY },
+				{ SquareType.EMPTY,     	SquareType.Z,   	SquareType.EMPTY }		
 		};
 		return tetromino;
 	}
@@ -142,10 +139,9 @@ public class TetrominoMaker {
 	 */
 	private SquareType[][] createJ() {
 		SquareType[][] tetromino = new SquareType[][]{
-				{ SquareType.J,     	SquareType.J, 		SquareType.EMPTY, 	SquareType.EMPTY },
-				{ SquareType.EMPTY,     SquareType.J,     	SquareType.EMPTY, 	SquareType.EMPTY },
-				{ SquareType.EMPTY,     SquareType.J,   	SquareType.EMPTY, 	SquareType.EMPTY },
-				{ SquareType.EMPTY,     SquareType.EMPTY,    SquareType.EMPTY,  SquareType.EMPTY },					
+				{ SquareType.J,     	SquareType.J, 		SquareType.EMPTY },
+				{ SquareType.EMPTY,     SquareType.J,     	SquareType.EMPTY },
+				{ SquareType.EMPTY,     SquareType.J,   	SquareType.EMPTY },			
 		};
 		return tetromino;
 	}
@@ -155,10 +151,9 @@ public class TetrominoMaker {
 	 */
 	private SquareType[][] createL() {
 		SquareType[][] tetromino = new SquareType[][]{
-				{ SquareType.EMPTY,     SquareType.EMPTY, 	SquareType.EMPTY, 	SquareType.EMPTY },
-				{ SquareType.EMPTY,     SquareType.L,     	SquareType.EMPTY,	SquareType.EMPTY },
-				{ SquareType.EMPTY,     SquareType.L,   	SquareType.EMPTY, 	SquareType.EMPTY },
-				{ SquareType.L,     	SquareType.L,    	SquareType.EMPTY,   SquareType.EMPTY },						
+				{ SquareType.EMPTY,     SquareType.L,     	SquareType.EMPTY },
+				{ SquareType.EMPTY,     SquareType.L,   	SquareType.EMPTY },
+				{ SquareType.L,     	SquareType.L,    	SquareType.EMPTY }				
 		};
 		return tetromino;
 	}

@@ -196,7 +196,7 @@ public class Board {
         falling = tetroMaker.getPoly(temp);
         
         //centers the polly
-        this.fallingPosition.setLocation(getWidth()/2 - 2, 0);  //set x = y , y = x
+        this.fallingPosition.setLocation(getWidth()/2 - falling.getPolyLength()/2, 0);  //set x = y , y = x
         return falling;
     }
 	
@@ -246,8 +246,11 @@ public class Board {
 		if(i == 40 && this.falling != null)
 			tryMove(this.falling);
 		
-		if(i == 38 && this.falling != null)
-			this.falling = this.falling.rotateRight();
+		if(i == 38 && this.falling != null) {
+			Poly temp = this.falling.rotateRight();
+			if(this.movePolyY(temp) && this.movePolyRight(temp) )
+				this.falling = this.falling.rotateRight();
+		}
 		
 		this.notifyListeners();
 	}

@@ -30,7 +30,7 @@ public class BoardTest implements Runnable {
 	}
 	
 	private void createBoard() {
-		board = new Board(12, 20);
+		board = new Board(20, 32);
 		thread = new Thread(this);
 		TextTetrisView view = new TextTetrisView();
 		tComponent = new TetrisComponent(board, mColorMap);
