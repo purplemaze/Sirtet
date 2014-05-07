@@ -249,7 +249,7 @@ public class Board {
 		if(i == 38 && this.falling != null) {
 			Poly temp = this.falling.rotateRight();
 			if(this.movePolyY(temp) && this.movePolyRight(temp) )
-				this.falling = this.falling.rotateRight();
+				this.falling = temp;
 		}
 		
 		this.notifyListeners();
