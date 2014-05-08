@@ -31,8 +31,8 @@ public class TetrisComponent extends JComponent implements BoardListener {
 	public Dimension getPreferredSize() {
 		super.getPreferredSize();
 
-        return new Dimension(this.board.getWidth() * (BLOCK_SIZE + BLOCK_SPACING), 
-        		this.board.getHeight() * (BLOCK_SIZE + BLOCK_SPACING));
+        return new Dimension((this.board.getWidth() -2)  * (BLOCK_SIZE + BLOCK_SPACING), 
+        		(this.board.getHeight() -2) * (BLOCK_SIZE + BLOCK_SPACING));
     }
 		
     @Override
@@ -41,15 +41,19 @@ public class TetrisComponent extends JComponent implements BoardListener {
         final Graphics2D g2d = (Graphics2D) g; //castas till Graphics2D
 
         g2d.setColor(Color.BLACK);
-        g2d.fillRect(0, 0, this.getWidth(), this.getHeight());
-        
+        //g2d.drawRect(0, 0, this.getWidth() , this.getHeight());
+        g2d.fillRect(0, 0, this.getWidth() +1 , this.getHeight() +1);
         //paint the board
-        for (int x = 0; x < this.board.getWidth(); x++) {
-            for (int y = 0; y < this.board.getHeight(); y++) {
-                g2d.setColor(this.mColorMap.get(board.getSquaretype(x, y)));
-                g2d.fillRect((BLOCK_SIZE + BLOCK_SPACING) * x,
-                        (BLOCK_SIZE + BLOCK_SPACING) * y,
-                        BLOCK_SIZE, BLOCK_SIZE);
+        for (int x = 0; x < this.board.getWidth() -1; x++) {
+            for (int y = 0; y < this.board.getHeight()-1; y++) {
+            	SquareType temp = board.getSquaretype(x+1, y+1);
+                g2d.setColor(this.mColorMap.get(temp)); //compensate for OUTSIDE block
+                //if(temp != SquareType.EMPTY) {
+                if(true) {
+	                g2d.fillRect((BLOCK_SIZE + BLOCK_SPACING) * x,
+	                        (BLOCK_SIZE + BLOCK_SPACING) * y,
+	                        BLOCK_SIZE, BLOCK_SIZE);
+	                }
             }
         }
         if(board.getFalling() != null)
@@ -66,9 +70,15 @@ public class TetrisComponent extends JComponent implements BoardListener {
         	for(int y = 0; y < poly.getPolyLength(); y++ ) {
         		if(poly.getPoly()[x][y] != SquareType.EMPTY) {
         			g2d.setColor(this.mColorMap.get(poly.getPoly()[x][y]));
-                    g2d.fillRect((BLOCK_SIZE + BLOCK_SPACING) * (board.getFallingPostiton().x + x),
-                            (BLOCK_SIZE + BLOCK_SPACING) * (board.getFallingPostiton().y + y),
+        			g2d.fillRect((BLOCK_SIZE + BLOCK_SPACING ) * (board.getFallingPostiton().x + x-1),  //compensate for OUTSIDE block
+                            (BLOCK_SIZE + BLOCK_SPACING) * (board.getFallingPostiton().y + y-1),
                             BLOCK_SIZE, BLOCK_SIZE);
+                    
+                    /*
+                    g2d.fillRect((BLOCK_SIZE) * (board.getFallingPostiton().x + x-1),  //compensate for OUTSIDE block
+                            (BLOCK_SIZE) * (board.getFallingPostiton().y + y-1),
+                            BLOCK_SIZE, BLOCK_SIZE);
+                            */
         		}
         	}
         }  

@@ -18,7 +18,7 @@ import javax.swing.Timer;
  */
 public class Board {
 	
-	private static final int TICK_COUNT = 200;
+	private int TICK_COUNT = 200;
 	private SquareType[][] squares;
 	private final int height;
 	private final int width;
@@ -27,6 +27,12 @@ public class Board {
 	private Point fallingPosition; //top left corner of the Polyomino
 	private boolean gameOver;
 	private ArrayList<BoardListener> boardListeners; 
+	private int score;
+	private int level;
+	private int fallenTetrominoCounter;
+	private boolean pause;
+	private Poly nextFalling;
+	
     /**
      * The tick Action, determines which function to call when the game updates.
      */
@@ -57,7 +63,11 @@ public class Board {
 		falling = null;
 		fallingPosition = new Point(0,0);
 		gameOver = false;
-		createEmptyBoard(width, height);	
+		score = 0;
+		createEmptyBoard(width, height);
+		level = 1;
+		fallenTetrominoCounter = 0;
+		pause = false;
 	}
 		
 	/**
@@ -174,6 +184,25 @@ public class Board {
 	
 	/**
 	 * 
+	 * @return
+	 */
+	public int getScore() {
+		return this.score;
+	}
+	
+	public void setPause() {
+		pause = !pause;
+	}
+	
+	public boolean getPause() {
+		return pause;
+	}
+	
+	public void getNextFalling() {
+	}
+	
+	/**
+	 * 
 	 */
 	private void notifyListeners() {
 		if(boardListeners.isEmpty()) {
@@ -193,7 +222,13 @@ public class Board {
         TetrominoMaker tetroMaker = new TetrominoMaker();
         Poly falling;
         int temp = 1 + rand.nextInt(SquareType.values().length -2);
-        falling = tetroMaker.getPoly(temp);
+        if(this.nextFalling == null) {
+        	falling = tetroMaker.getPoly(temp);
+        	nextFalling = tetroMaker.getPoly(1 + rand.nextInt(SquareType.values().length -2));
+        } else {
+        	falling = nextFalling;
+        	nextFalling = tetroMaker.getPoly(temp);
+        }
         
         //centers the polly
         this.fallingPosition.setLocation(getWidth()/2 - falling.getPolyLength()/2, 0);  //set x = y , y = x
@@ -236,20 +271,25 @@ public class Board {
 	 */
 	public void playerMovePoly(int i) {
 		//37 = left
-		if(i == 37)
+		if(i == 37 && pause == false)
 			tryMoveX(this.falling, 0);
 		//39 = rigth
-		if(i == 39)
+		if(i == 39 && pause == false)
 			tryMoveX(this.falling, 1);
 		//40 = down
 		//check movePoly() first
-		if(i == 40 && this.falling != null)
+		if(i == 40 && this.falling != null && pause == false)
 			tryMove(this.falling);
 		
-		if(i == 38 && this.falling != null) {
+		if(i == 38 && this.falling != null && pause == false) {
 			Poly temp = this.falling.rotateRight();
 			if(this.movePolyY(temp) && this.movePolyRight(temp) )
 				this.falling = temp;
+		}
+		if(i == 80) this.pause = !pause;
+		
+		if(i == 32 && this.falling != null && pause == false) {
+			while(tryMove(this.falling));
 		}
 		
 		this.notifyListeners();
@@ -323,6 +363,9 @@ public class Board {
 				}
 			}
 		}
+		fallenTetrominoCounter++;
+		//checks fallenTetro to determin level
+		level();
 	}
 	
 	private void checkRows(Poly poly) {;
@@ -334,6 +377,7 @@ public class Board {
 			}
 			if(fullRow) { 
 				removeRow(y);
+				score += 100;
 			}
 		}
 		this.notifyListeners();
@@ -363,12 +407,31 @@ public class Board {
             }
         }
     }
+	
+	private void level() {
+		if(fallenTetrominoCounter == 20) {
+			if(TICK_COUNT > 50) { 
+				TICK_COUNT -= 10;
+				this.level++;
+			}
+			fallenTetrominoCounter = 0;
+			System.out.println(TICK_COUNT);
+		}
+	}
+	public int getLevel() {
+		return level;
+	}
 	 
 	/**
 	 * Methods that gets called upon a game tick update.
 	 */
     public void updateBoard(){
+    	if(pause){
+    		clockTimer.stop();
+    		return;
+    	}
         clockTimer.setCoalesce(true);
+        clockTimer.setDelay(TICK_COUNT);
         clockTimer.start();
     }
 	
@@ -411,6 +474,10 @@ public class Board {
 	public void clearBoard() {
 		this.gameOver = false;
 		this.falling = null;
+		this.pause = false; //just to be sure
+		this.level = 1;
+		this.score = 0;
+		this.TICK_COUNT = 200;
 		createEmptyBoard(this.width, this.height);
 	}
 	/*

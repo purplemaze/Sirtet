@@ -25,7 +25,9 @@ lägg till nivåförändring
 
 Lägg till Next Tetromino
 
-lägg till poäng
+lägg till poäng klart
+
+lägg til paus
 
 
 ta bort de svarta kanterna, SquareType.OUTSIDE, från den grafiska komponenet. Alltså rita inte ut kanterna
